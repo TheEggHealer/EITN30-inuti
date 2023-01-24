@@ -1,4 +1,4 @@
 ### EITN30 Inuti
-This is a push test. (pb 115kg)
+This is a push test. (pb 100kg)
 
 That's pretty great.
