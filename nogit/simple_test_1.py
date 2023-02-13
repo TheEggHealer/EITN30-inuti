@@ -8,6 +8,8 @@ from digitalio import DigitalInOut
 
 # if running this on a ATSAMD21 M0 based board
 # from circuitpython_nrf24l01.rf24_lite import RF24
+
+#kwdp
 from circuitpython_nrf24l01.rf24 import RF24
 
 # invalid default values for scoping
