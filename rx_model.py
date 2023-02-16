@@ -1,16 +1,13 @@
 import struct
 from circuitpython_nrf24l01.rf24 import RF24
-import threading
 from tuntap import TunTap
 
-def rx_thread(event: threading.Event, rx: RF24, interface: TunTap):
+def rx_thread(rx: RF24, interface: TunTap):
 
     segments = [b''] * 256
 
     while True:
-        if event.is_set:
-            break
-
+        
         if rx.available():
             buffer = rx.read()
             
