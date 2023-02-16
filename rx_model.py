@@ -10,7 +10,6 @@ def rx_thread(rx: RF24, interface: TunTap):
 			
 		if rx.available():
 			buffer = rx.read()
-			print('Receiving packages...')
 
 			if (buffer == bytes(0b1001)): 
 				# Entire ip package received
@@ -18,6 +17,7 @@ def rx_thread(rx: RF24, interface: TunTap):
 				interface.write(packet)
 				packet = [b''] * 256
 			else:
-				segment_idx = struct.unpack('>B', buffer[0])
+        
+				segment_idx = int(struct.unpack('>B', buffer[0])[0])
 				segment = buffer[1:]
 				segments[segment_idx] = segment
