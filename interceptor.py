@@ -1,5 +1,5 @@
 from tuntap import TunTap, Packet
-import sys, os, time
+import sys, os, time, subprocess
 
 def OpenTunnel( device_name,   ip ,  net_mask):
     try:
@@ -13,7 +13,7 @@ def OpenTunnel( device_name,   ip ,  net_mask):
     return tun
 
 def start():
-  i = 10
+  i = 5
   while i > 0:
       bytes = tun.read()
       print(len(bytes))
@@ -28,17 +28,40 @@ def start():
 
   tun.close()
 
+def setup_base(interface):
+  subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o {interface} -j MASQUERADE', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
+  print('Setup done')
+
+def setup_mobile(interface):
+  ...
+
+def teardown_base(interface):
+  subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o {interface} -j MASQUERADE', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
+  print('Teardown done')
+
+def teardown_mobile(interface):
+  ...
+
 if __name__ == "__main__":
   device = int(input('Base (0) or Mobile (1) > '))
+  interface = 'longge'
   print(device)
 
   if device == 0:
     tunnel_ip = '192.168.69.1'
     mask = '255.255.255.0'
-    tun = OpenTunnel('tun0', tunnel_ip, mask)
+    tun = OpenTunnel(interface, tunnel_ip, mask)
+    setup_base(interface)
+    start()
+    teardown_base(interface)
   else:
     tunnel_ip = '192.168.69.2'
     mask = '255.255.255.0'
-    tun = OpenTunnel('tun0', tunnel_ip, mask)
-
-  start()
+    tun = OpenTunnel(interface, tunnel_ip, mask)
+    setup_base(interface)
+    start()
+    teardown_base(interface)
