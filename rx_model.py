@@ -2,7 +2,7 @@ import struct
 from circuitpython_nrf24l01.rf24 import RF24
 from tuntap import TunTap
 
-def rx_thread(rx: RF24, interface: TunTap):
+def rx_thread(rx: RF24, tun: TunTap):
 
 	segments = [b''] * 256
 
@@ -14,7 +14,7 @@ def rx_thread(rx: RF24, interface: TunTap):
 			if (buffer == bytes(0b1001)): 
 				# Entire ip package received
 				packet = b''.join(segments)
-				interface.write(packet)
+				tun.write(packet)
 				packet = [b''] * 256
 			else:
 				segment_idx = struct.unpack('>B', buffer[0])

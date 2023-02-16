@@ -70,7 +70,7 @@ def setup_base(interface):
 def setup_mobile(interface):
   print('Setup starting')
 
-  subprocess.check_call(f'sudo ip route add default via 192.168.69.1 dev {interface}', shell=True)
+  # subprocess.check_call(f'sudo ip route add default via 192.168.69.1 dev {interface}', shell=True)
 
   # Setup radio
   RX_SPI_BUS = spidev.SpiDev()
@@ -104,7 +104,7 @@ def teardown_base(interface, rx, tx):
   print('Teardown done')
 
 def teardown_mobile(interface, rx, tx):
-  subprocess.check_call(f'sudo ip route add default via 192.168.10.1 dev eth0', shell=True)
+  # subprocess.check_call(f'sudo ip route add default via 192.168.10.1 dev eth0', shell=True)
 
   rx.power = False
   tx.power = False
@@ -116,12 +116,12 @@ if __name__ == "__main__":
   interface = 'longge'
 
   buffer_monitor = BufferMonitor()
-  buffer_monitor.put('Test message 1'.encode(encoding='utf-8'))
-  buffer_monitor.put('Test message 2'.encode(encoding='utf-8'))
-  buffer_monitor.put('Test message 3'.encode(encoding='utf-8'))
-  buffer_monitor.put('Test message 4'.encode(encoding='utf-8'))
-  buffer_monitor.put('Test message 5'.encode(encoding='utf-8'))
-  buffer_monitor.put('Test message 6'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 1'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 2'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 3'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 4'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 5'.encode(encoding='utf-8'))
+  # buffer_monitor.put('Test message 6'.encode(encoding='utf-8'))
 
   if device == 0:
     tunnel_ip = '192.168.69.1'
@@ -148,6 +148,7 @@ if __name__ == "__main__":
         break
     
     teardown_base(interface, rx, tx)
+    tun.close()
   else:
     tunnel_ip = '192.168.69.2'
     mask = '255.255.255.0'
@@ -173,3 +174,4 @@ if __name__ == "__main__":
         break
 
     teardown_mobile(interface, rx, tx)
+    tun.close()
