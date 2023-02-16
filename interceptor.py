@@ -113,7 +113,7 @@ def teardown_mobile(interface, rx, tx):
 
 if __name__ == "__main__":
   device = int(input('Base (0) or Mobile (1) > '))
-  interface = 'longge'
+  interface_name = 'longge'
 
   buffer_monitor = BufferMonitor()
   # buffer_monitor.put('Test message 1'.encode(encoding='utf-8'))
@@ -126,8 +126,8 @@ if __name__ == "__main__":
   if device == 0:
     tunnel_ip = '192.168.69.1'
     mask = '255.255.255.0'
-    tun = OpenTunnel(interface, tunnel_ip, mask)
-    rx, tx = setup_base(interface)
+    tun = OpenTunnel(interface_name, tunnel_ip, mask)
+    rx, tx = setup_base(interface_name)
 
     tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
@@ -147,13 +147,13 @@ if __name__ == "__main__":
         interface_reader_thread.terminate()
         break
     
-    teardown_base(interface, rx, tx)
+    teardown_base(interface_name, rx, tx)
     tun.close()
   else:
     tunnel_ip = '192.168.69.2'
     mask = '255.255.255.0'
-    tun = OpenTunnel(interface, tunnel_ip, mask)
-    rx, tx = setup_mobile()
+    tun = OpenTunnel(interface_name, tunnel_ip, mask)
+    rx, tx = setup_mobile(interface_name)
     
     tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
@@ -173,5 +173,5 @@ if __name__ == "__main__":
         interface_reader_thread.terminate()
         break
 
-    teardown_mobile(interface, rx, tx)
+    teardown_mobile(interface_name, rx, tx)
     tun.close()
