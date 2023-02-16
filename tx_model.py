@@ -12,13 +12,13 @@ def tx_thread(tx: RF24, buffer_monitor):
     segments = split(packet)
     for segment in segments:
       respons = tx.send(segment)
-      print('dwa')
 
 def interface_reader_thread(tun: TunTap, buffer_monitor):
   inititalized = False
-  
+
   while True:
     packet = tun.read()
+    print('Read from tun')
     if inititalized:
       buffer_monitor.put(packet)
     else:

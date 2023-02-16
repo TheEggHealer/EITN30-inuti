@@ -15,9 +15,8 @@ def rx_thread(rx: RF24, interface: TunTap):
 				# Entire ip package received
 				packet = b''.join(segments)
 				interface.write(packet)
+				print('Wrote to tun')
 				packet = [b''] * 256
 			else:
-        
-				segment_idx = int(struct.unpack('>B', buffer[0])[0])
 				segment = buffer[1:]
-				segments[segment_idx] = segment
+				segments[buffer[0]] = segment

@@ -24,26 +24,10 @@ def OpenTunnel( device_name,   ip ,  net_mask):
     
     return tun
 
-def start():
-  i = 5
-  while i > 0:
-      bytes = tun.read()
-      print(len(bytes))
-      source = bytes[12:16]
-      dest = bytes[16:20]
-      icmp_type = bytes[20]
-      print(f"Source: {int(source[0])}.{int(source[1])}.{int(source[2])}.{int(source[3])}") 
-      print(f"Destination: {int(dest[0])}.{int(dest[1])}.{int(dest[2])}.{int(dest[3])}") 
-      print(f"icmp type: {int(icmp_type)}")
-      i -= 1
-      time.sleep(1)
-
-  tun.close()
-
 def setup_base(interface):
   print('Setup starting')
   # Setup forwarding and masquerading
-  subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o {interface} -j MASQUERADE', shell=True)
+  subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
 
@@ -95,7 +79,7 @@ def setup_mobile(interface):
   return rx, tx
 
 def teardown_base(interface, rx, tx):
-  subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o {interface} -j MASQUERADE', shell=True)
+  subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE', shell=True)
   subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -D FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
 
