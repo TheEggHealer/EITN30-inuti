@@ -91,7 +91,7 @@ def teardown_base(interface, rx, tx):
   print('Teardown done')
 
 def teardown_mobile(interface, rx, tx):
-  # subprocess.check_call(f'sudo ip route add default via 192.168.10.1 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
 
   rx.power = False
   tx.power = False
