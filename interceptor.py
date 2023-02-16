@@ -7,6 +7,7 @@ from circuitpython_nrf24l01.rf24 import RF24
 from tx_model import tx_thread, interface_reader_thread
 from rx_model import rx_thread
 import multiprocessing
+from multiprocessing.managers import BaseManager
 from buffer_monitor import BufferMonitor
 
 BASE_ADDR = b'1Node'
@@ -115,14 +116,10 @@ if __name__ == "__main__":
   device = int(input('Base (0) or Mobile (1) > '))
   interface_name = 'longge'
 
-  buffer_monitor = BufferMonitor()
-  buffer_monitor_value = multiprocessing.Value(BufferMonitor, buffer_monitor)
-  # buffer_monitor.put('Test message 1'.encode(encoding='utf-8'))
-  # buffer_monitor.put('Test message 2'.encode(encoding='utf-8'))
-  # buffer_monitor.put('Test message 3'.encode(encoding='utf-8'))
-  # buffer_monitor.put('Test message 4'.encode(encoding='utf-8'))
-  # buffer_monitor.put('Test message 5'.encode(encoding='utf-8'))
-  # buffer_monitor.put('Test message 6'.encode(encoding='utf-8'))
+  BaseManager.register('BufferMonitor', BufferMonitor)
+  manager = BaseManager()
+  manager.start()
+  buffer_monitor = manager.BufferMonitor()
 
   if device == 0:
     tunnel_ip = '192.168.69.1'
@@ -130,13 +127,13 @@ if __name__ == "__main__":
     tun = OpenTunnel(interface_name, tunnel_ip, mask)
     rx, tx = setup_base(interface_name)
 
-    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor_value))
+    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
 
     rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
     rx_thread.start()
 
-    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor_value))
+    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
     interface_reader_thread.start()
 
     while True:
@@ -156,13 +153,13 @@ if __name__ == "__main__":
     tun = OpenTunnel(interface_name, tunnel_ip, mask)
     rx, tx = setup_mobile(interface_name)
     
-    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor_value))
+    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
 
     rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
     rx_thread.start()
 
-    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor_value))
+    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
     interface_reader_thread.start()
 
     while True:

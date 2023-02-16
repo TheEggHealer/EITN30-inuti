@@ -1,24 +1,28 @@
-from buffer_monitor import BufferMonitor
 import struct
 from circuitpython_nrf24l01.rf24 import RF24
 from tuntap import TunTap
-from multiprocessing import Value
 
-def tx_thread(tx: RF24, buffer_monitor: Value):
+
+def tx_thread(tx: RF24, buffer_monitor):
   while True:
     # Wait for packet to send
-    packet = buffer_monitor.value.pop(1)
+    packet = buffer_monitor.pop(1)
     if packet == None: continue
     
     segments = split(packet)
     for segment in segments:
       respons = tx.send(segment)
-      print(respons)
+      print('dwa')
 
-def interface_reader_thread(tun: TunTap, buffer_monitor: Value):
+def interface_reader_thread(tun: TunTap, buffer_monitor):
+  inititalized = False
+  
   while True:
     packet = tun.read()
-    buffer_monitor.value.put(packet)
+    if inititalized:
+      buffer_monitor.put(packet)
+    else:
+      inititalized = True
 
 def split(packet):
   identifier = 0
