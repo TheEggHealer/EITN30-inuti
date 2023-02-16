@@ -4,8 +4,9 @@ import spidev
 import board
 from digitalio import DigitalInOut
 from circuitpython_nrf24l01.rf24 import RF24
-from tx_model import tx_thread
-import threading
+from tx_model import tx_thread, interface_reader_thread
+from rx_model import rx_thread
+import multiprocessing
 from buffer_monitor import BufferMonitor
 
 BASE_ADDR = b'1Node'
@@ -67,13 +68,19 @@ def setup_base(interface):
   return rx, tx
 
 def setup_mobile(interface):
+  print('Setup starting')
+
+  subprocess.check_call(f'sudo ip route add default via 192.168.69.1 dev {interface}', shell=True)
+
   # Setup radio
   RX_SPI_BUS = spidev.SpiDev()
   RX_CSN_PIN = 10
   RX_CE_PIN = DigitalInOut(board.D27)
   rx = RF24(RX_SPI_BUS, RX_CSN_PIN, RX_CE_PIN)
   rx.pa_level = 0
+  rx.open_tx_pipe(MOBILE_ADDR)
   rx.open_rx_pipe(1, BASE_ADDR) 
+  rx.listen = True
 
   TX_SPI_BUS = spidev.SpiDev()
   TX_CSN_PIN = 0
@@ -81,6 +88,8 @@ def setup_mobile(interface):
   tx = RF24(TX_SPI_BUS, TX_CSN_PIN, TX_CE_PIN)
   tx.pa_level = 0
   tx.open_tx_pipe(MOBILE_ADDR)
+  tx.open_rx_pipe(1, BASE_ADDR)
+  tx.listen = False
   print('Setup done')
   return rx, tx
 
@@ -95,9 +104,12 @@ def teardown_base(interface, rx, tx):
   print('Teardown done')
 
 def teardown_mobile(interface, rx, tx):
+  subprocess.check_call(f'sudo ip route add default via 192.168.10.1 dev eth0', shell=True)
+
   rx.power = False
   tx.power = False
   rx.listen = False
+  print('Teardown done')
 
 if __name__ == "__main__":
   device = int(input('Base (0) or Mobile (1) > '))
@@ -117,25 +129,47 @@ if __name__ == "__main__":
     tun = OpenTunnel(interface, tunnel_ip, mask)
     rx, tx = setup_base(interface)
 
-    stopping_event = threading.Event()
-    tx_thread = threading.Thread(target=tx_thread, args=(stopping_event, tx, buffer_monitor))
+    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
+
+    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
+    rx_thread.start()
+
+    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
+    interface_reader_thread.start()
 
     while True:
       c = input('Enter command: ')
 
       if c == 'exit':
-        stopping_event.set()
-        tx_thread.join()
+        tx_thread.terminate()
+        rx_thread.terminate()
+        interface_reader_thread.terminate()
         break
-      elif c == 'lock':
-        print(buffer_monitor.status())
     
     teardown_base(interface, rx, tx)
   else:
     tunnel_ip = '192.168.69.2'
     mask = '255.255.255.0'
     tun = OpenTunnel(interface, tunnel_ip, mask)
-    rx, tx = setup_mobile(interface)
-    start()
+    rx, tx = setup_mobile()
+    
+    tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
+    tx_thread.start()
+
+    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
+    rx_thread.start()
+
+    interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
+    interface_reader_thread.start()
+
+    while True:
+      c = input('Enter command: ')
+
+      if c == 'exit':
+        tx_thread.terminate()
+        rx_thread.terminate()
+        interface_reader_thread.terminate()
+        break
+
     teardown_mobile(interface, rx, tx)

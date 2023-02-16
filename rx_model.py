@@ -20,4 +20,3 @@ def rx_thread(rx: RF24, interface: TunTap):
 				segment_idx = struct.unpack('>B', buffer[0])
 				segment = buffer[1:]
 				segments[segment_idx] = segment
-            

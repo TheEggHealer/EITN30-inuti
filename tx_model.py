@@ -1,13 +1,10 @@
 from buffer_monitor import BufferMonitor
 import struct
 from circuitpython_nrf24l01.rf24 import RF24
-import threading
+from tuntap import TunTap
 
-def tx_thread(event: threading.Event, tx: RF24, buffer_monitor: BufferMonitor):
+def tx_thread(tx: RF24, buffer_monitor: BufferMonitor):
   while True:
-    if event.is_set():
-      break
-
     # Wait for packet to send
     packet = buffer_monitor.pop(1)
     if packet == None: continue
@@ -16,6 +13,11 @@ def tx_thread(event: threading.Event, tx: RF24, buffer_monitor: BufferMonitor):
     for segment in segments:
       respons = tx.send(segment)
       print(respons)
+
+def interface_reader_thread(tun: TunTap, buffer_monitor: BufferMonitor):
+  while True:
+    packet = tun.read()
+    buffer_monitor.put(packet)
 
 def split(packet):
   identifier = 0

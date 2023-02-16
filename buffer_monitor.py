@@ -1,10 +1,12 @@
-import threading
+import multiprocessing
+from multiprocessing import Lock
+from multiprocessing import Condition
 
 class BufferMonitor:
 
   def __init__(self):
-    self.lock = threading.Lock()
-    self.condition = threading.Condition(self.lock)
+    self.lock = Lock()
+    self.condition = Condition(self.lock)
 
     self.packet_buffer = []
   
