@@ -4,18 +4,37 @@ class BufferMonitor:
 
   def __init__(self):
     self.lock = threading.Lock()
+    self.condition = threading.Condition(self.lock)
 
     self.packet_buffer = []
   
   def put(self, packet):
     self.lock.acquire()
-    self.packet.append(packet)
+    self.packet_buffer.append(packet)
+    self.condition.notify_all()
     self.lock.release()
   
-  def pop(self):
+  def size(self):
     self.lock.acquire()
-    packet = self.buffer[0]
-    self.buffer = self.buffer[1:]
+    size = len(self.packet_buffer)
+    self.lock.release()
+    return size
+  
+  def status(self):
+    return self.lock.locked()
+
+  def pop(self, timeout):
+    self.lock.acquire()
+
+    if len(self.packet_buffer) == 0:
+      self.condition.wait(timeout)
+    
+    if len(self.packet_buffer) == 0:
+      self.lock.release()
+      return None
+
+    packet = self.packet_buffer[0]
+    self.packet_buffer = self.packet_buffer[1:]
     self.lock.release()
     return packet
   
