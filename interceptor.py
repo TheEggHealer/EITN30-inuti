@@ -4,8 +4,7 @@ import spidev
 import board
 from digitalio import DigitalInOut
 from circuitpython_nrf24l01.rf24 import RF24
-import transmission
-from transmission import transmission_thread
+from tx_model import tx_thread
 import threading
 from buffer_monitor import BufferMonitor
 
@@ -119,7 +118,7 @@ if __name__ == "__main__":
     rx, tx = setup_base(interface)
 
     stopping_event = threading.Event()
-    tx_thread = threading.Thread(target=transmission_thread, args=(stopping_event, tx, buffer_monitor))
+    tx_thread = threading.Thread(target=tx_thread, args=(stopping_event, tx, buffer_monitor))
     tx_thread.start()
 
     while True:

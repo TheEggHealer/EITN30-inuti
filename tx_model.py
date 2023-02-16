@@ -2,9 +2,8 @@ from buffer_monitor import BufferMonitor
 import struct
 from circuitpython_nrf24l01.rf24 import RF24
 import threading
-import time
 
-def transmission_thread(event: threading.Event, tx: RF24, buffer_monitor: BufferMonitor):
+def tx_thread(event: threading.Event, tx: RF24, buffer_monitor: BufferMonitor):
   while True:
     if event.is_set():
       break
