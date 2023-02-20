@@ -106,10 +106,10 @@ def teardown_mobile(interface, rx, tx):
 def show_title():
 	os.system('clear')
 	# print('\u001b[0;0H')
-	print("*********************************************")
-	print("***               SnakeData               ***")
-	print("*** - Get your data where your snake is - ***")
-	print("*********************************************")
+	print("***********************************************")
+	print("***                \u001b[38;2;255;168;0mSnake\u001b[38;2;226;109;0mData\u001b[0m                ***")
+	print("*** - Get your data where your snake is \u001b[38;2;255;168;0m@\u001b[0m - ***")
+	print("***********************************************")
 
 def print_screen(status):
 	DOUBLE_LEFT_TOP = u'\u2554'
