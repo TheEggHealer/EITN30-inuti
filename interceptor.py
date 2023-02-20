@@ -55,9 +55,10 @@ def setup_base(interface):
 def setup_mobile(interface):
   print('Setup starting')
 
-  subprocess.check_call(f'sudo ip route add 192.168.69.1 dev longge', shell=True)
-  subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
+  subprocess.check_call(f'sudo ip route add 192.168.10.162 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route del 192.168.10.0/24 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del default via 192.168.10.1', shell=True)
+  subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
 
   # Setup radio
   RX_SPI_BUS = spidev.SpiDev()
@@ -91,6 +92,9 @@ def teardown_base(interface, rx, tx):
   print('Teardown done')
 
 def teardown_mobile(interface, rx, tx):
+  subprocess.check_call(f'sudo ip route add 192.168.10.0/24 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route del 192.168.10.162 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route del default via 192.168.69.1', shell=True)
   subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
 
   rx.power = False
