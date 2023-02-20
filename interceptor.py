@@ -199,10 +199,11 @@ if __name__ == "__main__":
 
     while True:
       show_title()
-      sent, received, sent_ip, received_ip = buffer_monitor.get_stats()
+      sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails = buffer_monitor.get_stats()
       print_screen({
-				'sent': f'{sent} ({sent_ip} ip)',
-				'received': f'{received} ({received_ip} ip)',
+				'sent': f'{sent} ({sent_ip} ip, {sent_bytes} bytes)',
+				'received': f'{received} ({received_ip} ip, {received_bytes} bytes)',
+        'failed': f'{fails}',
 			})
 
       c = input('Enter command: ')
