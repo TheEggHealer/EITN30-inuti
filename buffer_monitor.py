@@ -7,6 +7,8 @@ class BufferMonitor:
   def __init__(self):
     self.lock = Lock()
     self.condition = Condition(self.lock)
+    self.count_sent = 0
+    self.count_rec = 0
 
     self.packet_buffer = []
   
@@ -39,6 +41,28 @@ class BufferMonitor:
     self.packet_buffer = self.packet_buffer[1:]
     self.lock.release()
     return packet
+
+  def add_sent(self):
+    self.lock.acquire()
+    self.count_sent += 1
+    self.lock.release()
+
+  def add_rec(self):
+    self.lock.acquire()
+    self.count_rec += 1
+    self.lock.release()
+
+  def get_sent(self):
+    self.lock.acquire()
+    sent = self.count_sent
+    self.lock.release()
+    return sent
+
+  def get_rec(self):
+    self.lock.acquire()
+    rec = self.count_rec
+    self.lock.release()
+    return rec
   
   
   

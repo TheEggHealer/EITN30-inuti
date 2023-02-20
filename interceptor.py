@@ -98,6 +98,40 @@ def teardown_mobile(interface, rx, tx):
   rx.listen = False
   print('Teardown done')
 
+def show_title():
+	os.system('clear')
+	# print('\u001b[0;0H')
+	print("*********************************************")
+	print("***               SnakeData               ***")
+	print("*** - Get your data where your snake is - ***")
+	print("*********************************************")
+
+def print_screen(status):
+	DOUBLE_LEFT_TOP = u'\u2554'
+	DOUBLE_VERTI_PIPE = u'\u2551'
+	DOUBLE_LEFT_BOTTOM = u'\u255a'
+	DOUBLE_RIGHT_TOP = u'\u2557'
+	DOUBLE_RIGHT_BOTTOM = u'\u255d'
+	DOUBLE_HORIZ_PIPE = u'\u2550'
+	SINGLE_LEFT_TOP = u'\u250c'
+	SINGLE_VERTI_PIPE = u'\u2502'
+	SINGLE_LEFT_BOTTOM = u'\u2514'
+	SINGLE_RIGHT_TOP = u'\u2510'
+	SINGLE_RIGHT_BOTTOM = u'\u2518'
+	SINGLE_HORIZ_PIPE = u'\u2500'
+
+	line = SINGLE_HORIZ_PIPE * 29
+
+	print('\n')
+	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 44)
+
+	print(SINGLE_VERTI_PIPE + ' \u001b[7mSTATUS:\u001b[0m (Press enter to update)')
+	for title, value in status.items():
+		print(SINGLE_VERTI_PIPE + f' * {title}:\t{value}')
+
+	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 44)
+	print('\n')
+
 if __name__ == "__main__":
   device = int(input('Base (0) or Mobile (1) > '))
   interface_name = 'longge'
@@ -116,13 +150,19 @@ if __name__ == "__main__":
     tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
 
-    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
+    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun, buffer_monitor))
     rx_thread.start()
 
     interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
     interface_reader_thread.start()
 
     while True:
+      show_title()
+      print_screen({
+				'sent:': buffer_monitor.get_sent(),
+				'received': buffer_monitor.get_rec(),
+			})
+
       c = input('Enter command: ')
 
       if c == 'exit':
@@ -142,13 +182,19 @@ if __name__ == "__main__":
     tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
     tx_thread.start()
 
-    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun))
+    rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun, buffer_monitor))
     rx_thread.start()
 
     interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
     interface_reader_thread.start()
 
     while True:
+      show_title()
+      print_screen({
+				'sent:': buffer_monitor.get_sent(),
+				'received': buffer_monitor.get_rec(),
+			})
+
       c = input('Enter command: ')
 
       if c == 'exit':
