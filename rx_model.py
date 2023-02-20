@@ -10,13 +10,14 @@ def rx_thread(rx: RF24, interface: TunTap, buffer_monitor):
       
     if rx.available():
       buffer = rx.read()
-      buffer_monitor.add_rec()
 
       if (buffer == bytes(0b1001)): 
         # Entire ip package received
         packet = b''.join(segments)
         interface.write(packet)
         packet = [b''] * 256
+        buffer_monitor.inc(received_ip=1)
       else:
         segment = buffer[1:]
         segments[buffer[0]] = segment
+        buffer_monitor.inc(received=1)

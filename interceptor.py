@@ -162,9 +162,10 @@ if __name__ == "__main__":
 
     while True:
       show_title()
+      sent, received, sent_ip, received_ip = buffer_monitor.get_stats()
       print_screen({
-				'sent:': buffer_monitor.get_sent(),
-				'received': buffer_monitor.get_rec(),
+				'sent': f'{sent} ({sent_ip} ip)',
+				'received': f'{received} ({received_ip} ip)',
 			})
 
       c = input('Enter command: ')
@@ -194,9 +195,10 @@ if __name__ == "__main__":
 
     while True:
       show_title()
+      sent, received, sent_ip, received_ip = buffer_monitor.get_stats()
       print_screen({
-				'sent:': buffer_monitor.get_sent(),
-				'received': buffer_monitor.get_rec(),
+				'sent': f'{sent} ({sent_ip} ip)',
+				'received': f'{received} ({received_ip} ip)',
 			})
 
       c = input('Enter command: ')

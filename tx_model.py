@@ -12,7 +12,8 @@ def tx_thread(tx: RF24, buffer_monitor):
     segments = split(packet)
     for segment in segments:
       respons = tx.send(segment)
-      buffer_monitor.add_sent()
+      buffer_monitor.inc(sent=1)
+    buffer_monitor.inc(sent_ip=1)
 
 def interface_reader_thread(tun: TunTap, buffer_monitor):
   inititalized = False

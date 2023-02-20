@@ -9,6 +9,8 @@ class BufferMonitor:
     self.condition = Condition(self.lock)
     self.count_sent = 0
     self.count_rec = 0
+    self.count_sent_ip = 0
+    self.count_received_ip = 0
 
     self.packet_buffer = []
   
@@ -42,27 +44,22 @@ class BufferMonitor:
     self.lock.release()
     return packet
 
-  def add_sent(self):
+  def inc(self, sent=0, received=0, sent_ip=0, received_ip=0):
     self.lock.acquire()
-    self.count_sent += 1
+    self.count_sent += sent
+    self.count_rec += received
+    self.count_sent_ip += sent_ip
+    self.count_received_ip += received_ip
     self.lock.release()
 
-  def add_rec(self):
-    self.lock.acquire()
-    self.count_rec += 1
-    self.lock.release()
-
-  def get_sent(self):
+  def get_stats(self):
     self.lock.acquire()
     sent = self.count_sent
+    received = self.count_rec
+    sent_ip = self.count_sent_ip
+    received_ip = self.count_received_ip
     self.lock.release()
-    return sent
-
-  def get_rec(self):
-    self.lock.acquire()
-    rec = self.count_rec
-    self.lock.release()
-    return rec
+    return sent, received, sent_ip, received_ip
   
   
   
