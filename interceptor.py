@@ -28,7 +28,7 @@ def setup_base(interface):
   print('Setup starting')
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
 
   # Setup radio
@@ -83,7 +83,8 @@ def setup_mobile(interface):
 
 def teardown_base(interface, rx, tx):
   subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  # subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -D FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
 
   rx.power = False
@@ -162,10 +163,11 @@ if __name__ == "__main__":
 
     while True:
       show_title()
-      sent, received, sent_ip, received_ip = buffer_monitor.get_stats()
+      sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails = buffer_monitor.get_stats()
       print_screen({
-				'sent': f'{sent} ({sent_ip} ip)',
-				'received': f'{received} ({received_ip} ip)',
+				'sent': f'{sent} ({sent_ip} ip, {sent_bytes} bytes)',
+				'received': f'{received} ({received_ip} ip, {received_bytes} bytes)',
+        'failed': f'{fails}',
 			})
 
       c = input('Enter command: ')
@@ -175,6 +177,8 @@ if __name__ == "__main__":
         rx_thread.terminate()
         interface_reader_thread.terminate()
         break
+      elif c == 'clear':
+        buffer_monitor.clear_stats()
     
     teardown_base(interface_name, rx, tx)
     tun.close()
@@ -208,6 +212,8 @@ if __name__ == "__main__":
         rx_thread.terminate()
         interface_reader_thread.terminate()
         break
+      elif c == 'clear':
+        buffer_monitor.clear_stats()
 
     teardown_mobile(interface_name, rx, tx)
     tun.close()

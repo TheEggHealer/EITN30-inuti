@@ -16,8 +16,8 @@ def rx_thread(rx: RF24, interface: TunTap, buffer_monitor):
         packet = b''.join(segments)
         interface.write(packet)
         packet = [b''] * 256
-        buffer_monitor.inc(received_ip=1)
+        buffer_monitor.inc(rec_ip=1)
       else:
         segment = buffer[1:]
         segments[buffer[0]] = segment
-        buffer_monitor.inc(received=1)
+        buffer_monitor.inc(rec=1, rec_bytes=len(segment))

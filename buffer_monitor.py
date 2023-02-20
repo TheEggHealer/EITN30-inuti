@@ -10,7 +10,10 @@ class BufferMonitor:
     self.count_sent = 0
     self.count_rec = 0
     self.count_sent_ip = 0
-    self.count_received_ip = 0
+    self.count_rec_ip = 0
+    self.count_sent_bytes = 0
+    self.count_rec_bytes = 0
+    self.count_fail = 0
 
     self.packet_buffer = []
   
@@ -44,23 +47,38 @@ class BufferMonitor:
     self.lock.release()
     return packet
 
-  def inc(self, sent=0, received=0, sent_ip=0, received_ip=0):
+  def inc(self, sent=0, rec=0, sent_ip=0, rec_ip=0, sent_bytes=0, rec_bytes=0, fail=0):
     self.lock.acquire()
     self.count_sent += sent
-    self.count_rec += received
+    self.count_rec += rec
     self.count_sent_ip += sent_ip
-    self.count_received_ip += received_ip
+    self.count_rec_ip += rec_ip
+    self.count_sent_bytes += sent_bytes
+    self.count_rec_bytes += rec_bytes
+    self.count_fail += fail
     self.lock.release()
 
   def get_stats(self):
     self.lock.acquire()
     sent = self.count_sent
-    received = self.count_rec
+    rec = self.count_rec
     sent_ip = self.count_sent_ip
-    received_ip = self.count_received_ip
+    rec_ip = self.count_rec_ip
+    sent_bytes = self.count_sent_bytes
+    rec_bytes = self.count_rec_bytes
+    fail = self.count_fail
     self.lock.release()
-    return sent, received, sent_ip, received_ip
+    return sent, rec, sent_ip, rec_ip, sent_bytes, rec_bytes, fail
   
-  
+  def clear_stats(self):
+    self.lock.acquire()
+    self.count_sent = 0
+    self.count_rec = 0
+    self.count_sent_ip = 0
+    self.count_rec_ip = 0
+    self.count_sent_bytes = 0
+    self.count_rec_bytes = 0
+    self.count_fail = 0
+    self.lock.release()
   
   
