@@ -4,7 +4,7 @@ from tuntap import TunTap
 
 def rx_thread(rx: RF24, interface: TunTap, buffer_monitor):
 
-  segments = [b''] * 256
+  segments = [b''] * 65536
 
   while True:
       
@@ -15,9 +15,10 @@ def rx_thread(rx: RF24, interface: TunTap, buffer_monitor):
         # Entire ip package received
         packet = b''.join(segments)
         interface.write(packet)
-        segments = [b''] * 256
+        segments = [b''] * 65536
         buffer_monitor.update_stats(rec_ip=1)
       else:
-        segment = buffer[1:]
-        segments[buffer[0]] = segment
+        segment = buffer[2:]
+        identifier = int(struct.unpack('<H', buffer[:2])[0])
+        segments[identifier] = segment
         buffer_monitor.update_stats(rec=1, rec_bytes=len(segment))

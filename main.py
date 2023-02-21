@@ -12,12 +12,14 @@ from buffer_monitor import BufferMonitor
 
 BASE_ADDR = b'1Node'
 MOBILE_ADDR = b'2Node'
+BASE_2_ADDR = b'3Node'
+MOBILE_2_ADDR = b'4Node'
 
 def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        # os.system(f'sudo ifconfig {interface_name} mtu 1966080')
+        # os.system(f'sudo ifconfig {interface_name} mtu 7936')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -37,13 +39,13 @@ def setup_base(interface_name):
   print('Setup starting')
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  #subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  # subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   # Setup radio
   rx = setup_radio(BASE_ADDR, MOBILE_ADDR, 10, DigitalInOut(board.D27), True)
-  tx = setup_radio(BASE_ADDR, MOBILE_ADDR, 0, DigitalInOut(board.D17), False)
+  tx = setup_radio(BASE_2_ADDR, MOBILE_2_ADDR, 0, DigitalInOut(board.D17), False)
 
   print('Setup done')
   return rx, tx
@@ -62,7 +64,7 @@ def setup_mobile(interface):
   subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
 
   # Setup radio
-  rx = setup_radio(MOBILE_ADDR, BASE_ADDR, 10, DigitalInOut(board.D27), True)
+  rx = setup_radio(MOBILE_2_ADDR, BASE_2_ADDR, 10, DigitalInOut(board.D27), True)
   tx = setup_radio(MOBILE_ADDR, BASE_ADDR, 0, DigitalInOut(board.D17), False)
 
   print('Setup done')
