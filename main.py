@@ -4,8 +4,8 @@ import spidev
 import board
 from digitalio import DigitalInOut
 from circuitpython_nrf24l01.rf24 import RF24
-from tx_model import tx_thread, interface_reader_thread
-from rx_model import rx_thread
+import tx_model
+import rx_model
 import multiprocessing
 from multiprocessing.managers import BaseManager
 from buffer_monitor import BufferMonitor
@@ -13,11 +13,11 @@ from buffer_monitor import BufferMonitor
 BASE_ADDR = b'1Node'
 MOBILE_ADDR = b'2Node'
 
-def OpenTunnel(device_name, ip, net_mask):
+def OpenTunnel(interface_name, ip, net_mask):
     try:
-        tun = TunTap(nic_type="Tun",nic_name= device_name )
-        tun.config(ip = ip,mask=net_mask )
-        os.system(f'sudo ifconfig {device_name} mtu 7936')
+        tun = TunTap(nic_type="Tun",nic_name=interface_name)
+        tun.config(ip=ip, mask=net_mask)
+        os.system(f'sudo ifconfig {interface_name} mtu 7936')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -33,12 +33,12 @@ def setup_radio(tra_addr, rec_addr, csn_pin, ce_pin, listening):
   radio.listen = listening
   return radio
 
-def setup_base(interface):
+def setup_base(interface_name):
   print('Setup starting')
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
-  subprocess.check_call(f'sudo iptables -A FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   # Setup radio
   rx = setup_radio(BASE_ADDR, MOBILE_ADDR, 10, DigitalInOut(board.D27), True)
@@ -47,7 +47,7 @@ def setup_base(interface):
   print('Setup done')
   return rx, tx
 
-def teardown_radios(tx, rx):
+def teardown_radios(rx, tx):
   rx.power = False
   tx.power = False
   rx.listen = False
@@ -67,22 +67,22 @@ def setup_mobile(interface):
   print('Setup done')
   return rx, tx
 
-def teardown_base(interface, rx, tx):
+def teardown_base(interface_name, rx, tx):
   subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
   # subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
-  subprocess.check_call(f'sudo iptables -D FORWARD -i {interface} -o eth0 -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
-  teardown_radios(tx, rx)
+  teardown_radios(rx, tx)
   print('Teardown done')
 
-def teardown_mobile(interface, rx, tx):
+def teardown_mobile(rx, tx):
   subprocess.check_call(f'sudo ip route add 192.168.10.0/24 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del 192.168.10.162 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del default via 192.168.69.1', shell=True)
   subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
 
-  teardown_radios(tx, rx)
+  teardown_radios(rx, tx)
   print('Teardown done')
 
 def show_title():
@@ -119,7 +119,7 @@ def print_screen(status):
 	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 46)
 	print('\n')
   
-def run_program(buffer_monitor, tx_thread, rx_thread, interface_reader_thread): 
+def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread): 
   while True:
     show_title()
     sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails = buffer_monitor.get_stats()
@@ -131,51 +131,50 @@ def run_program(buffer_monitor, tx_thread, rx_thread, interface_reader_thread):
       'splitting': f'{buffer_monitor.get_splitting()}'
     })
 
-    c = input('Enter command: ')
+    c = input('Enter command: ').lower().strip()
 
-    if c == 'exit' or c == 'q':
-      tx_thread.terminate()
+    if c == 'exit' or c == 'q' or c == 'quit':
       rx_thread.terminate()
+      tx_thread.terminate()
       interface_reader_thread.terminate()
       break
     elif c == 'clear':
       buffer_monitor.clear_stats()
 
-def setup(device):
+def setup(device, interface_name='longge'):
   mask = '255.255.255.0'
   tunnel_ip = '192.168.69.1' if device == 'b' else '192.168.69.2'
   tun = OpenTunnel(interface_name, tunnel_ip, mask)
-  rx, tx = setup_base(interface_name) if device == 0 else setup_mobile(interface_name)
+  rx, tx = setup_base(interface_name) if device == 'b' else setup_mobile(interface_name)
   return rx, tx, tun
 
-def teardown(device, rx, tx, tun):
+def teardown(device, rx, tx, tun, interface_name='longge'):
   if device == 'b': teardown_base(interface_name, rx, tx)
-  else: teardown_mobile(interface_name, rx, tx)
+  else: teardown_mobile(rx, tx)
   
   tun.close()
 
 if __name__ == "__main__":
   device = input('Base (b) or Mobile (m) > ')
   while device != 'b' and device != 'm':
-     device = input('Invalid input. Base (b) or Mobile (m) > ')
-  interface_name = 'longge'
-
-  rx, tx, tun = setup(device)
+    device = input('Invalid input. Base (b) or Mobile (m) > ')
 
   BaseManager.register('BufferMonitor', BufferMonitor)
   manager = BaseManager()
   manager.start()
   buffer_monitor = manager.BufferMonitor()
+  
+  rx, tx, tun = setup(device)
 
-  tx_thread = multiprocessing.Process(target=tx_thread, args=(tx, buffer_monitor))
-  tx_thread.start()
-
-  rx_thread = multiprocessing.Process(target=rx_thread, args=(rx, tun, buffer_monitor))
+  rx_thread = multiprocessing.Process(target=rx_model.rx_thread, args=(rx, tun, buffer_monitor))
   rx_thread.start()
 
-  interface_reader_thread = multiprocessing.Process(target=interface_reader_thread, args=(tun, buffer_monitor))
+  tx_thread = multiprocessing.Process(target=tx_model.tx_thread, args=(tx, buffer_monitor))
+  tx_thread.start()
+
+  interface_reader_thread = multiprocessing.Process(target=tx_model.interface_reader_thread, args=(tun, buffer_monitor))
   interface_reader_thread.start()
 
-  run_program(buffer_monitor, tx_thread, rx_thread, interface_reader_thread)
+  run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread)
 
   teardown(device, rx, tx, tun)
