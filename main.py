@@ -17,7 +17,7 @@ def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        os.system(f'sudo ifconfig {interface_name} mtu 1966080')
+        # os.system(f'sudo ifconfig {interface_name} mtu 1966080')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)

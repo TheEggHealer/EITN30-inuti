@@ -20,7 +20,6 @@ def rx_thread(rx: RF24, interface: TunTap, buffer_monitor):
         buffer_monitor.update_stats(rec_ip=1)
         buffer_monitor.set_splitting(False)
       else:
-        segment = buffer[2:]
-        indentifier = struct.unpack('<H', buffer[:2])
-        segments[indentifier] = segment
+        segment = buffer[1:]
+        segments[buffer[0]] = segment
         buffer_monitor.update_stats(rec=1, rec_bytes=len(segment))
