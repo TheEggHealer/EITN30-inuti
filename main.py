@@ -17,7 +17,7 @@ def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        os.system(f'sudo ifconfig {interface_name} mtu 7936')
+        os.system(f'sudo ifconfig {interface_name} mtu 1966080')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -37,7 +37,8 @@ def setup_base(interface_name):
   print('Setup starting')
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  #subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   # Setup radio
@@ -69,8 +70,8 @@ def setup_mobile(interface):
 
 def teardown_base(interface_name, rx, tx):
   subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
-  # subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  # subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -D FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   teardown_radios(rx, tx)
