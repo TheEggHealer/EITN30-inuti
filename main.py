@@ -143,19 +143,21 @@ def run_program(buffer_monitor, tx_thread, rx_thread, interface_reader_thread):
 
 def setup(device):
   mask = '255.255.255.0'
-  tunnel_ip = '192.168.69.1' if device == 0 else '192.168.69.2'
+  tunnel_ip = '192.168.69.1' if device == 'b' else '192.168.69.2'
   tun = OpenTunnel(interface_name, tunnel_ip, mask)
   rx, tx = setup_base(interface_name) if device == 0 else setup_mobile(interface_name)
   return rx, tx, tun
 
 def teardown(device, rx, tx, tun):
-  if device == 0: teardown_base(interface_name, rx, tx)
+  if device == 'b': teardown_base(interface_name, rx, tx)
   else: teardown_mobile(interface_name, rx, tx)
   
   tun.close()
 
 if __name__ == "__main__":
-  device = int(input('Base (0) or Mobile (1) > '))
+  device = input('Base (b) or Mobile (m) > ')
+  while device != 'b' and device != 'm':
+     device = input('Invalid input. Base (b) or Mobile (m) > ')
   interface_name = 'longge'
 
   rx, tx, tun = setup(device)
