@@ -15,11 +15,13 @@ class BufferMonitor:
     self.count_rec_bytes = 0
     self.count_fail = 0
     self.splitting = False
+    self.largest_packet = 0
 
     self.packet_buffer = []
   
   def put(self, packet):
     self.lock.acquire()
+    if len(packet) > self.largest_packet: self.largest_packet = len(packet)
     self.packet_buffer.append(packet)
     self.condition.notify_all()
     self.lock.release()
@@ -79,8 +81,9 @@ class BufferMonitor:
     sent_bytes = self.count_sent_bytes
     rec_bytes = self.count_rec_bytes
     fail = self.count_fail
+    largest_packet = self.largest_packet
     self.lock.release()
-    return sent, rec, sent_ip, rec_ip, sent_bytes, rec_bytes, fail
+    return sent, rec, sent_ip, rec_ip, sent_bytes, rec_bytes, fail, largest_packet
   
   def clear_stats(self):
     self.lock.acquire()

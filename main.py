@@ -123,13 +123,14 @@ def print_screen(status):
 def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread): 
   while True:
     show_title()
-    sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails = buffer_monitor.get_stats()
+    sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails, largest_packet = buffer_monitor.get_stats()
     print_screen({
       'sent': f'{sent:,} ({sent_ip:,} ip, {sent_bytes:,} bytes)',
       'received': f'{received:,} ({received_ip:,} ip, {received_bytes:,} bytes)',
       'failed': f'{fails:,}',
       'bfr_size': f'{buffer_monitor.size()}',
-      'splitting': f'{buffer_monitor.get_splitting()}'
+      'splitting': f'{buffer_monitor.get_splitting()}',
+      'largest': f'{largest_packet:,}'
     })
 
     c = input('Enter command: ').lower().strip()
