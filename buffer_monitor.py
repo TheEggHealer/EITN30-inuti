@@ -14,6 +14,7 @@ class BufferMonitor:
     self.count_sent_bytes = 0
     self.count_rec_bytes = 0
     self.count_fail = 0
+    self.splitting = False
 
     self.packet_buffer = []
   
@@ -47,7 +48,7 @@ class BufferMonitor:
     self.lock.release()
     return packet
 
-  def inc(self, sent=0, rec=0, sent_ip=0, rec_ip=0, sent_bytes=0, rec_bytes=0, fail=0):
+  def update_stats(self, sent=0, rec=0, sent_ip=0, rec_ip=0, sent_bytes=0, rec_bytes=0, fail=0):
     self.lock.acquire()
     self.count_sent += sent
     self.count_rec += rec
@@ -57,6 +58,17 @@ class BufferMonitor:
     self.count_rec_bytes += rec_bytes
     self.count_fail += fail
     self.lock.release()
+
+  def set_splitting(self, splitting):
+    self.lock.acquire()
+    self.splitting = splitting
+    self.lock.release()
+
+  def get_splitting(self):
+    self.lock.acquire()
+    splitting = self.splitting
+    self.lock.release()
+    return splitting
 
   def get_stats(self):
     self.lock.acquire()

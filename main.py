@@ -128,13 +128,13 @@ def print_screen(status):
 	line = SINGLE_HORIZ_PIPE * 29
 
 	print('\n')
-	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 44)
+	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 46)
 
 	print(SINGLE_VERTI_PIPE + ' \u001b[7mSTATUS:\u001b[0m (Press enter to update)')
 	for title, value in status.items():
 		print(SINGLE_VERTI_PIPE + f' * {title}:\t{value}')
 
-	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 44)
+	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 46)
 	print('\n')
 
 if __name__ == "__main__":
@@ -168,11 +168,13 @@ if __name__ == "__main__":
 				'sent': f'{sent} ({sent_ip} ip, {sent_bytes} bytes)',
 				'received': f'{received} ({received_ip} ip, {received_bytes} bytes)',
         'failed': f'{fails}',
+        'bfr_size': f'{buffer_monitor.size()}',
+        'splitting': f'{buffer_monitor.get_splitting()}'
 			})
 
       c = input('Enter command: ')
 
-      if c == 'exit':
+      if c == 'exit' or c == 'q':
         tx_thread.terminate()
         rx_thread.terminate()
         interface_reader_thread.terminate()
