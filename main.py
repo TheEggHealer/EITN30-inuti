@@ -125,9 +125,9 @@ def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread):
     show_title()
     sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails = buffer_monitor.get_stats()
     print_screen({
-      'sent': f'{sent} ({sent_ip} ip, {sent_bytes} bytes)',
-      'received': f'{received} ({received_ip} ip, {received_bytes} bytes)',
-      'failed': f'{fails}',
+      'sent': f'{sent:,} ({sent_ip:,} ip, {sent_bytes:,} bytes)',
+      'received': f'{received:,} ({received_ip:,} ip, {received_bytes:,} bytes)',
+      'failed': f'{fails:,}',
       'bfr_size': f'{buffer_monitor.size()}',
       'splitting': f'{buffer_monitor.get_splitting()}'
     })
