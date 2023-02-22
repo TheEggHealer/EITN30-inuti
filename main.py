@@ -35,6 +35,11 @@ def setup_radio(tra_addr, rec_addr, csn_pin, ce_pin, listening):
   radio.listen = listening
   return radio
 
+def teardown_radios(rx, tx):
+  rx.power = False
+  tx.power = False
+  rx.listen = False
+
 def setup_base(interface_name):
   print('Setup starting')
   # Setup forwarding and masquerading
@@ -49,11 +54,6 @@ def setup_base(interface_name):
 
   print('Setup done')
   return rx, tx
-
-def teardown_radios(rx, tx):
-  rx.power = False
-  tx.power = False
-  rx.listen = False
 
 def setup_mobile(interface):
   print('Setup starting')
