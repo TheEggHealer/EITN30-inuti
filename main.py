@@ -12,14 +12,14 @@ from buffer_monitor import BufferMonitor
 
 BASE_ADDR = b'1Node'
 MOBILE_ADDR = b'2Node'
-BASE_2_ADDR = b'3Node'
-MOBILE_2_ADDR = b'4Node'
+BASE_2_ADDR = b'1Node'
+MOBILE_2_ADDR = b'2Node'
 
 def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        # os.system(f'sudo ifconfig {interface_name} mtu 7936')
+        # os.system(f'sudo ifconfig {interface_name} mtu 538')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -50,7 +50,9 @@ def setup_base(interface_name):
 
   # Setup radio
   rx = setup_radio(BASE_ADDR, MOBILE_ADDR, 10, DigitalInOut(board.D27), True)
+  rx.channel = 125
   tx = setup_radio(BASE_2_ADDR, MOBILE_2_ADDR, 0, DigitalInOut(board.D17), False)
+  tx.channel = 124
 
   print('Setup done')
   return rx, tx
@@ -65,7 +67,9 @@ def setup_mobile(interface):
 
   # Setup radio
   rx = setup_radio(MOBILE_2_ADDR, BASE_2_ADDR, 10, DigitalInOut(board.D27), True)
+  rx.channel = 124
   tx = setup_radio(MOBILE_ADDR, BASE_ADDR, 0, DigitalInOut(board.D17), False)
+  tx.channel = 125
 
   print('Setup done')
   return rx, tx
