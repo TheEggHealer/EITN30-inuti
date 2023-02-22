@@ -58,7 +58,7 @@ def teardown_radios(rx, tx):
 def setup_mobile(interface):
   print('Setup starting')
   # Setup forwarding and masquerading
-  subprocess.check_call(f'sudo ip route add 192.168.10.162 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route add 192.168.10.163 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del 192.168.10.0/24 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del default via 192.168.10.1', shell=True)
   subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
@@ -81,7 +81,7 @@ def teardown_base(interface_name, rx, tx):
 
 def teardown_mobile(rx, tx):
   subprocess.check_call(f'sudo ip route add 192.168.10.0/24 dev eth0', shell=True)
-  subprocess.check_call(f'sudo ip route del 192.168.10.162 dev eth0', shell=True)
+  subprocess.check_call(f'sudo ip route del 192.168.10.163 dev eth0', shell=True)
   subprocess.check_call(f'sudo ip route del default via 192.168.69.1', shell=True)
   subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
 
