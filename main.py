@@ -19,7 +19,7 @@ def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        # os.system(f'sudo ifconfig {interface_name} mtu 538')
+        os.system(f'sudo ifconfig {interface_name} mtu 65535')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -33,6 +33,7 @@ def setup_radio(tra_addr, rec_addr, csn_pin, ce_pin, listening):
   radio.open_tx_pipe(tra_addr)
   radio.open_rx_pipe(1, rec_addr) 
   radio.listen = listening
+  radio.data_rate = 2
   return radio
 
 def teardown_radios(rx, tx):
@@ -50,9 +51,9 @@ def setup_base(interface_name):
 
   # Setup radio
   rx = setup_radio(BASE_ADDR, MOBILE_ADDR, 10, DigitalInOut(board.D27), True)
-  rx.channel = 125
+  rx.channel = 94
   tx = setup_radio(BASE_2_ADDR, MOBILE_2_ADDR, 0, DigitalInOut(board.D17), False)
-  tx.channel = 124
+  tx.channel = 94
 
   print('Setup done')
   return rx, tx
@@ -67,9 +68,9 @@ def setup_mobile(interface):
 
   # Setup radio
   rx = setup_radio(MOBILE_2_ADDR, BASE_2_ADDR, 10, DigitalInOut(board.D27), True)
-  rx.channel = 124
+  rx.channel = 94
   tx = setup_radio(MOBILE_ADDR, BASE_ADDR, 0, DigitalInOut(board.D17), False)
-  tx.channel = 125
+  tx.channel = 94
 
   print('Setup done')
   return rx, tx

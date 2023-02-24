@@ -25,7 +25,7 @@ def interface_reader_thread(tun: TunTap, buffer_monitor):
   inititalized = False
 
   while True:
-    packet = tun.read()
+    packet = tun.read(65535)
     if inititalized:
       buffer_monitor.put(packet)
     else:
