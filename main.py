@@ -62,10 +62,26 @@ def setup_base(interface_name):
 def setup_mobile():
   print('Setup starting')
   # Setup forwarding and masquerading
-  subprocess.check_call(f'sudo ip route add 192.168.10.163 dev eth0', shell=True)
-  subprocess.check_call(f'sudo ip route del 192.168.10.0/24 dev eth0', shell=True)
-  subprocess.check_call(f'sudo ip route del default via 192.168.10.1', shell=True)
-  subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
+  try:
+    subprocess.check_call(f'sudo ip route del 192.168.10.0/24 dev eth0', shell=True)
+  except Exception as e:
+    print(e)
+    
+  try:
+    subprocess.check_call(f'sudo ip route add 192.168.10.163 dev eth0', shell=True)
+  except Exception as e:
+     print(e)
+
+  try:
+    subprocess.check_call(f'sudo ip route del default via 192.168.10.1', shell=True)
+    
+  except Exception as e:
+     print(e)
+  
+  try: 
+    subprocess.check_call(f'sudo ip route add default via 192.168.69.1', shell=True)
+  except Exception as e:
+    print(e)
 
   # Setup radio
   rx = setup_radio(MOBILE_2_ADDR, BASE_2_ADDR, 10, DigitalInOut(board.D27), True)
@@ -86,10 +102,25 @@ def teardown_base(interface_name, rx, tx):
   print('Teardown done')
 
 def teardown_mobile(rx, tx):
-  subprocess.check_call(f'sudo ip route add 192.168.10.0/24 dev eth0', shell=True)
-  subprocess.check_call(f'sudo ip route del 192.168.10.163 dev eth0', shell=True)
-  subprocess.check_call(f'sudo ip route del default via 192.168.69.1', shell=True)
-  subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
+  try:
+    subprocess.check_call(f'sudo ip route add 192.168.10.0/24 dev eth0', shell=True)
+  except Exception as e:
+    print(e)
+
+  try:
+    subprocess.check_call(f'sudo ip route del 192.168.10.163 dev eth0', shell=True)
+  except Exception as e:
+     print(e)
+
+  try:
+    subprocess.check_call(f'sudo ip route del default via 192.168.69.1', shell=True)
+  except Exception as e:
+     print(e)
+  
+  try: 
+    subprocess.check_call(f'sudo ip route add default via 192.168.10.1', shell=True)
+  except Exception as e:
+    print(e)
 
   teardown_radios(rx, tx)
   print('Teardown done')
