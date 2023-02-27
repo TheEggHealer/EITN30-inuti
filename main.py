@@ -19,7 +19,7 @@ def OpenTunnel(interface_name, ip, net_mask):
     try:
         tun = TunTap(nic_type="Tun",nic_name=interface_name)
         tun.config(ip=ip, mask=net_mask)
-        os.system(f'sudo ifconfig {interface_name} mtu 65535')
+        os.system(f'sudo ifconfig {interface_name} mtu 1500')
     except KeyboardInterrupt:
         print('Interface is busy')
         sys.exit(0)
@@ -43,6 +43,7 @@ def teardown_radios(rx, tx):
 
 def setup_base(interface_name):
   print('Setup starting')
+
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
   # subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
@@ -51,9 +52,9 @@ def setup_base(interface_name):
 
   # Setup radio
   rx = setup_radio(BASE_ADDR, MOBILE_ADDR, 10, DigitalInOut(board.D27), True)
-  rx.channel = 94
+  rx.channel = 30
   tx = setup_radio(BASE_2_ADDR, MOBILE_2_ADDR, 0, DigitalInOut(board.D17), False)
-  tx.channel = 94
+  tx.channel = 30
 
   print('Setup done')
   return rx, tx
@@ -68,9 +69,9 @@ def setup_mobile(interface):
 
   # Setup radio
   rx = setup_radio(MOBILE_2_ADDR, BASE_2_ADDR, 10, DigitalInOut(board.D27), True)
-  rx.channel = 94
+  rx.channel = 30
   tx = setup_radio(MOBILE_ADDR, BASE_ADDR, 0, DigitalInOut(board.D17), False)
-  tx.channel = 94
+  tx.channel = 30
 
   print('Setup done')
   return rx, tx

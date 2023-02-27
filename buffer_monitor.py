@@ -45,8 +45,13 @@ class BufferMonitor:
       self.lock.release()
       return None
 
+    # FIFO
     packet = self.packet_buffer[0]
     self.packet_buffer = self.packet_buffer[1:]
+
+    #LIFO
+    # packet = self.packet_buffer[-1]
+    # self.packet_buffer = self.packet_buffer[:-1]
     self.lock.release()
     return packet
 

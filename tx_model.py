@@ -25,7 +25,7 @@ def interface_reader_thread(tun: TunTap, buffer_monitor):
   inititalized = False
 
   while True:
-    packet = tun.read(65535)
+    packet = tun.read()
     if inititalized:
       buffer_monitor.put(packet)
     else:
@@ -35,13 +35,22 @@ def split(packet):
   identifier = 0
   segments = []
   
-  for i in range(int(len(packet) / 30)):
-    identifier = struct.pack('<H', i)
-    segments.append(identifier + packet[i*30 : (i+1)*30])
+  # 2 Byte
+  # for i in range(int(len(packet) / 30)):
+  #   identifier = struct.pack('<H', i)
+  #   segments.append(identifier + packet[i*30 : (i+1)*30])
   
-  if len(packet) % 30 != 0:
-    identifier = struct.pack('<H', len(segments))
-    segments.append(identifier + packet[len(segments)*30:])
+  # if len(packet) % 30 != 0:
+  #   identifier = struct.pack('<H', len(segments))
+  #   segments.append(identifier + packet[len(segments)*30:])
+  
+  for i in range(int(len(packet) / 31)):
+    identifier = struct.pack('<B', i)
+    segments.append(identifier + packet[i*31 : (i+1)*31])
+  
+  if len(packet) % 31 != 0:
+    identifier = struct.pack('<B', len(segments))
+    segments.append(identifier + packet[len(segments)*31:])
   
   segments.append(bytes(0b1001))
 
