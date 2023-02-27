@@ -148,13 +148,13 @@ def print_screen(status):
 	SINGLE_HORIZ_PIPE = u'\u2500'
 
 	print('\n')
-	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 46)
+	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 45 + SINGLE_RIGHT_TOP)
 
-	print(SINGLE_VERTI_PIPE + ' \u001b[7mSTATUS:\u001b[0m (Press enter to update)')
+	print(SINGLE_VERTI_PIPE + ' \u001b[7mSTATUS:\u001b[0m (Press enter to update)' + ' '*13 + SINGLE_VERTI_PIPE)
 	for title, value in status.items():
-		print(SINGLE_VERTI_PIPE + f' * {title}:\t{value}')
+		print(SINGLE_VERTI_PIPE + f' * {title}:\t{value}' + ' '*(30 - len(value)) + SINGLE_VERTI_PIPE)
 
-	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 46)
+	print(SINGLE_LEFT_BOTTOM + SINGLE_HORIZ_PIPE * 45 + SINGLE_RIGHT_BOTTOM)
 	print('\n')
   
 def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread): 
@@ -162,8 +162,8 @@ def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread):
     show_title()
     sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails, largest_packet = buffer_monitor.get_stats()
     print_screen({
-      'sent': f'{sent:,} ({sent_ip:,} ip, {sent_bytes:,} bytes)',
-      'received': f'{received:,} ({received_ip:,} ip, {received_bytes:,} bytes)',
+      'sent': f'{sent:,} ({sent_ip:,} ip, ' + (f'{sent_bytes:,} B)' if sent_bytes <= 100000 else (f'{int(sent_bytes/1000):,} kB)' if sent_bytes <= 100000000 else f'{int(sent_bytes/1000000):,} MB)')),
+      'received': f'{received:,} ({received_ip:,} ip, ' + (f'{received_bytes:,} B)' if received_bytes <= 100000 else (f'{int(received_bytes/1000):,} kB)' if received_bytes <= 100000000 else f'{int(received_bytes/1000000):,} MB)')),
       'failed': f'{fails:,}',
       'bfr_size': f'{buffer_monitor.size()}',
       'sending': f'{buffer_monitor.get_sending()}',
