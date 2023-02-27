@@ -9,7 +9,7 @@ def tx_thread(tx: RF24, buffer_monitor):
     packet = buffer_monitor.pop(1)
     if packet == None: continue
     
-    buffer_monitor.set_splitting(True)
+    buffer_monitor.set_sending(True)
     segments = split(packet)
     for segment in segments:
 
@@ -18,7 +18,7 @@ def tx_thread(tx: RF24, buffer_monitor):
       buffer_monitor.update_stats(sent=1, sent_bytes=len(segment), fail=0 if respons else 1)
 
     # Removing one sent package (END OF IP-PACKET)
-    buffer_monitor.set_splitting(False)
+    buffer_monitor.set_sending(False)
     buffer_monitor.update_stats(sent=-1, sent_ip=1)
 
 def interface_reader_thread(tun: TunTap, buffer_monitor):

@@ -14,7 +14,7 @@ class BufferMonitor:
     self.count_sent_bytes = 0
     self.count_rec_bytes = 0
     self.count_fail = 0
-    self.splitting = False
+    self.sending = False
     self.largest_packet = 0
 
     self.packet_buffer = []
@@ -66,16 +66,16 @@ class BufferMonitor:
     self.count_fail += fail
     self.lock.release()
 
-  def set_splitting(self, splitting):
+  def set_sending(self, sending):
     self.lock.acquire()
-    self.splitting = splitting
+    self.sending = sending
     self.lock.release()
 
-  def get_splitting(self):
+  def get_sending(self):
     self.lock.acquire()
-    splitting = self.splitting
+    sending = self.sending
     self.lock.release()
-    return splitting
+    return sending
 
   def get_stats(self):
     self.lock.acquire()
@@ -99,6 +99,7 @@ class BufferMonitor:
     self.count_sent_bytes = 0
     self.count_rec_bytes = 0
     self.count_fail = 0
+    self.largest = 0
     self.lock.release()
   
   

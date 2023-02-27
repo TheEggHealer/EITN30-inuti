@@ -59,7 +59,7 @@ def setup_base(interface_name):
   print('Setup done')
   return rx, tx
 
-def setup_mobile(interface):
+def setup_mobile():
   print('Setup starting')
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo ip route add 192.168.10.163 dev eth0', shell=True)
@@ -116,8 +116,6 @@ def print_screen(status):
 	SINGLE_RIGHT_BOTTOM = u'\u2518'
 	SINGLE_HORIZ_PIPE = u'\u2500'
 
-	line = SINGLE_HORIZ_PIPE * 29
-
 	print('\n')
 	print(SINGLE_LEFT_TOP + SINGLE_HORIZ_PIPE * 46)
 
@@ -137,7 +135,7 @@ def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread):
       'received': f'{received:,} ({received_ip:,} ip, {received_bytes:,} bytes)',
       'failed': f'{fails:,}',
       'bfr_size': f'{buffer_monitor.size()}',
-      'splitting': f'{buffer_monitor.get_splitting()}',
+      'sending': f'{buffer_monitor.get_sending()}',
       'largest': f'{largest_packet:,}'
     })
 
@@ -155,7 +153,7 @@ def setup(device, interface_name='longge'):
   mask = '255.255.255.0'
   tunnel_ip = '192.168.69.1' if device == 'b' else '192.168.69.2'
   tun = OpenTunnel(interface_name, tunnel_ip, mask)
-  rx, tx = setup_base(interface_name) if device == 'b' else setup_mobile(interface_name)
+  rx, tx = setup_base(interface_name) if device == 'b' else setup_mobile()
   return rx, tx, tun
 
 def teardown(device, rx, tx, tun, interface_name='longge'):
