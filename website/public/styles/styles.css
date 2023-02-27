@@ -13,6 +13,7 @@ html, body {
   height: 100%;
   font-family: 'Open Sans', sans-serif;
   background-color: #1D1D1D;
+  color: #ffffff;
 }
 
 a {
@@ -23,7 +24,6 @@ a {
 h1 {
   margin: 0px;
   padding: 10px 0;
-  color: #ffffff;
 }
 
 h3 {
@@ -62,6 +62,7 @@ h3 {
 }
 
 .panel {
+  position: relative;
   background-color: #262626;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.102);
   display: flex;
@@ -69,5 +70,35 @@ h3 {
   flex-direction: column;
   width: 60vw;
   margin: 100px auto;
-  padding: 30px 0;
+  padding: 30px 30px;
+}
+
+.panel img {
+  min-width: none;
+  max-width: none;
+  width: 35vw;
+}
+
+#drop-zone {
+  position: relative;
+  display: flex;
+  border: 2.5px dashed #454545;
+  border-radius: 5px;
+  margin-top: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#drop-zone p {
+  margin: 0;
+}
+
+#drop-zone img {
+  min-width: none;
+  max-width: none;
+  width: 7vw;
 }

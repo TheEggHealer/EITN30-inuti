@@ -1,0 +1,48 @@
+<html>
+	<head>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+		<title>SnakeData</title>
+	</head>
+	<body>
+    <div class="panel">
+      <img src="assets/logo-dark-mode.svg" style="margin-bottom: 40px;" alt="">
+      <h1 class="header">Welcome to <span class="color-primary">Snake</span><span class="color-secondary">Data</span></h1>
+      <h3>Get your data where your snake is <span class="color-primary hover"><a href="https://instagram.com/snakesinthelake" target="_blank">@</a></span></h3>
+      <!-- ondragover="stopDefault(event);dragOver(this, 'Drop the images to upload them.');"
+        ondragenter="stopDefault(event);dragOver(this, 'Drop the images to upload them.');"
+        ondragleave="stopDefault(event);dragLeave(this);"
+        ondrop="stopDefault(event);dragLeave(this);addFilesAndSubmit(event);" -->
+      <div 
+        id="drop-zone" 
+        ondragover="stopDefault(event);"
+        ondragleave="stopDefault(event);"
+        ondragenter="stopDefault(event);"
+        ondrop="stopDefault(event);handleFile(event);">
+        <img style="margin-bottom: 10px" src="../assets/arrow.svg" alt="">
+        <p>Upload file</p>
+
+        <script>
+          function stopDefault(event) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          function handleFile(event) {
+            var file = event.target.files || event.dataTransfer.files;
+            
+            console.log(file)
+
+            var fd = new FormData();
+            fd.append('file', file[0], file[0].name);
+            var x = new XMLHttpRequest();
+            x.open("post", '/upload', true);
+            x.send(fd);
+            console.log('File uploaded')
+          }
+        </script>
+
+      </div>
+    </div>
+	</body>
+</html>
