@@ -47,7 +47,7 @@ def setup_base(interface_name):
   # Setup forwarding and masquerading
   subprocess.check_call(f'sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
   # subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
-  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -A FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -m limit --limit 20/sec -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -A FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   # Setup radio
@@ -79,7 +79,7 @@ def setup_mobile(interface):
 def teardown_base(interface_name, rx, tx):
   subprocess.check_call(f'sudo iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE', shell=True)
   # subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j TCPMSS --set-mss 7896 -p tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 7896:7926 ', shell=True)
-  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+  subprocess.check_call(f'sudo iptables -D FORWARD -i eth0 -o {interface_name} -m state --state RELATED,ESTABLISHED -m limit --limit 20/sec -j ACCEPT', shell=True)
   subprocess.check_call(f'sudo iptables -D FORWARD -i {interface_name} -o eth0 -j ACCEPT', shell=True)
 
   teardown_radios(rx, tx)
