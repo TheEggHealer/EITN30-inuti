@@ -105,7 +105,7 @@ h3 {
   margin: 0;
 }
 
-#drop-zone img {
+#drop-zone svg {
   min-width: none;
   max-width: none;
   width: 7vw;
@@ -123,3 +123,44 @@ h3 {
   d: path('M64 46L38.3284 46C36.9999 46 36.9999 46 35.5 46L10 46C8.00006 46 8.00011 45.9999 8.00006 44.5C8 43 8.00006 43 10 43L30 43L35 42.9999C35.9999 42.9999 35.8953 43 36.9999 43C38.1044 43 37.9999 43 39 42.9999L44 43L64 43C66 43 66 43 66 44.5C66 46 66 45.9999 64 46Z');
 }
 
+
+.upload-bar {
+  position: relative;
+
+}
+
+.upload-bar p {
+  visibility: visible;
+  top: 0;
+  left: 0;
+}
+
+.upload-bar.dropped-file p {
+  visibility: hidden;
+}
+
+.upload-bar .progress-container {
+  visibility: hidden;
+  position: absolute;
+}
+.upload-bar.dropped-file .progress-container {
+  position: absolute;
+  visibility: visible;
+  background-color: #454545;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  border-radius: 10px;
+  
+}
+
+.progress-container .progress-bar {
+  position: relative;
+  background-color: #E26D00;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 10px;
+}

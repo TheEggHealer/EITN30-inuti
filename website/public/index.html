@@ -41,11 +41,15 @@
           </defs>
         </svg>
 
-        <p>Upload file</p>
+        <div class="upload-bar">
+          <p>Upload file</p>
+          <div class="progress-container">
+            <div class="progress-bar"></div>
+          </div>
+        </div>
 
         <script>
           function stopDefault(event) {
-            console.log('dawda')
             event.stopPropagation();
             event.preventDefault();
           }
@@ -62,8 +66,9 @@
 
             if(x.upload) {
               x.upload.addEventListener("progress", function(event){
-                // var percentage = parseInt(event.loaded / event.total * 100);
+                var percentage = parseInt(event.loaded / event.total * 100);
                 // progress.innerText = progress.style.width = percentage + "%";
+                document.getElementsByClassName('progress-bar').style.width = percentage + '%';
               });
             }
             x.onreadystatechange = function () {
