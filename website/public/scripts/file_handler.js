@@ -10,6 +10,7 @@ let process = window.setInterval(function () {
         const files = JSON.parse(x.response);
         const fileContainer = document.getElementById('files-container');
         const template = document.getElementById('file-template')
+        files.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
         if(JSON.stringify(current_files) !== JSON.stringify(files)) {
           fileContainer.innerHTML = '';
