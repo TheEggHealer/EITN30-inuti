@@ -124,26 +124,26 @@ h3 {
 }
 
 
-.upload-bar {
+#upload-bar {
   position: relative;
 
 }
 
-.upload-bar p {
+#upload-bar p {
   visibility: visible;
   top: 0;
   left: 0;
 }
 
-.upload-bar.dropped-file p {
+#upload-bar.dropped-file p {
   visibility: hidden;
 }
 
-.upload-bar .progress-container {
+#upload-bar .progress-container {
   visibility: hidden;
   position: absolute;
 }
-.upload-bar.dropped-file .progress-container {
+#upload-bar.dropped-file .progress-container {
   position: absolute;
   visibility: visible;
   background-color: #454545;
@@ -155,7 +155,7 @@ h3 {
   
 }
 
-.progress-container .progress-bar {
+.progress-container #progress-bar {
   position: relative;
   background-color: #E26D00;
   top: 0;

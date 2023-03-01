@@ -41,10 +41,10 @@
           </defs>
         </svg>
 
-        <div class="upload-bar">
+        <div id="upload-bar">
           <p>Upload file</p>
           <div class="progress-container">
-            <div class="progress-bar"></div>
+            <div id="progress-bar"></div>
           </div>
         </div>
 
@@ -56,6 +56,7 @@
 
           function handleFile(event) {
             document.getElementById('drop-zone').classList.add('dropped-file')
+            document.getElementById('upload-bar').classList.add('dropped-file')
             var file = event.target.files || event.dataTransfer.files;
             
             console.log(file)
@@ -63,20 +64,32 @@
             var fd = new FormData();
             fd.append('file', file[0], file[0].name);
             var x = new XMLHttpRequest();
+            
+            
+            let bytes = file[0].size;
+            let time = bytes/(1500 * 6.5);
+            let interval = (time/100) * 1000;
+            console.log(interval)
+            let percent = 0;
+            let progress = window.setInterval(function () {
+              console.log(percent)
+              if (percent <= 100) {
+                document.getElementById('progress-bar').style.width = percent + '%';
+              }
+              percent++;
+            },interval)
+            
 
-            if(x.upload) {
-              x.upload.addEventListener("progress", function(event){
-                var percentage = parseInt(event.loaded / event.total * 100);
-                // progress.innerText = progress.style.width = percentage + "%";
-                document.getElementsByClassName('progress-bar').style.width = percentage + '%';
-              });
-            }
+            
             x.onreadystatechange = function () {
               if(x.readyState == 4) {
                 
-                unHoverFile(event); // this will reset the text and styling of the drop zone
+                document.getElementById('drop-zone').classList.remove('dropped-file')
+                document.getElementById('upload-bar').classList.remove('dropped-file')
                 if(x.status == 200) {
                   // success
+                  window.clearInterval(progress)
+                  document.getElementById('progress-bar').style.width = '100%';
                 }
                 else {
                   // failed - TODO: Add code to handle server errors
@@ -88,7 +101,6 @@
             x.send(fd);
             
             console.log('File uploaded')
-            document.getElementById('drop-zone').classList.remove('dropped-file')
           }
 
           function hoverFile(event) {
