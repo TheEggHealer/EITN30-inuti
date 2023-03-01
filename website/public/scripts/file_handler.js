@@ -24,12 +24,7 @@ let process = window.setInterval(function () {
 
           current_files = files;
         }
-
       }
-      
-
     }
   }
-
-
 }, 1000);

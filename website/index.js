@@ -13,9 +13,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get('/files', function(req, res) {
   var fs = require('fs');
   var files = fs.readdirSync('./public/snakedata');
-  
-  console.log('Get request: ' + files);
-  
+
   res.send(files);
 });
 
