@@ -25,6 +25,7 @@ app.post("/upload", function(request, response) {
             console.log(err);
         }
     });
+    console.log("file uploaded")
       
       
   }
