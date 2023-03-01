@@ -164,3 +164,54 @@ h3 {
   height: 100%;
   border-radius: 10px;
 }
+
+#files-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(40%, 1fr));
+  column-gap: 10px;
+  flex-direction: row;
+  margin-top: 40px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.file {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  border: solid 2.5px #45454500;
+  border-radius: 5px;
+  padding: 0 10px;
+  transition: all 200ms ease;
+}
+
+.file .file-paper {
+  max-width: none;
+  min-width: none;
+  width: 1.2em;
+  margin-right: 20px;
+}
+
+.file .file-paper #arrow {
+  transition: all 200ms ease;
+  transform: translateY(-100%);
+}
+
+.file:hover {
+  border: solid 2.5px #454545;
+  border-radius: 5px;
+}
+
+.file:hover .file-paper #arrow {
+  transform: translateY(0%);
+}
+
+.file .file-paper #pap {
+  transition: all 200ms ease;
+  opacity: 1;
+}
+
+.file:hover .file-paper #pap {
+  opacity: 0;
+}

@@ -10,6 +10,15 @@ app.use(upload());
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get('/files', function(req, res) {
+  var fs = require('fs');
+  var files = fs.readdirSync('./public/snakedata');
+  
+  console.log('Get request: ' + files);
+  
+  res.send(files);
+});
+
 var fileIdx = 1;
 app.post("/upload", function(request, response) {
 
