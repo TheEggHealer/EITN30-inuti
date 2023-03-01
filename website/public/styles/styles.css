@@ -91,6 +91,14 @@ h3 {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  transition: border 200ms ease;
+}
+
+#drop-zone.hover-file {
+  border: 2.5px dashed #7a7a7a;
+}
+#drop-zone.dropped-file {
+  border: 2.5px dashed #E26D00;
 }
 
 #drop-zone p {
@@ -102,3 +110,16 @@ h3 {
   max-width: none;
   width: 7vw;
 }
+
+.arrow-box #group #arrow {
+  transition: all 0.5s ease;
+}
+
+#drop-zone.hover-file .arrow-box #group #arrow {
+  d: path('M51.1422 33.6863L38.4143 46.4142C37.6333 47.1953 36.3669 47.1953 35.5859 46.4142L22.858 33.6863C22.0769 32.9052 22.0769 31.6389 22.858 30.8579C23.639 30.0768 24.9053 30.0768 25.6864 30.8579L35.0001 40.1716L35.0001 10C35.0001 8.89543 35.8955 8 37.0001 8C38.1047 8 39.0001 8.89543 39.0001 10L39.0001 40.1716L48.3138 30.8579C49.0949 30.0768 50.3612 30.0768 51.1422 30.8579C51.9233 31.6389 51.9233 32.9052 51.1422 33.6863Z');
+}
+
+#drop-zone.dropped-file .arrow-box #group #arrow {
+  d: path('M64 46L38.3284 46C36.9999 46 36.9999 46 35.5 46L10 46C8.00006 46 8.00011 45.9999 8.00006 44.5C8 43 8.00006 43 10 43L30 43L35 42.9999C35.9999 42.9999 35.8953 43 36.9999 43C38.1044 43 37.9999 43 39 42.9999L44 43L64 43C66 43 66 43 66 44.5C66 46 66 45.9999 64 46Z');
+}
+
