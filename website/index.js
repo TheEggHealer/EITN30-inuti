@@ -10,6 +10,7 @@ app.use(upload());
 
 app.use(express.static(path.join(__dirname, "public")));
 
+var fileIdx = 1;
 app.post("/upload", function(request, response) {
 
   var images = new Array();
@@ -19,15 +20,13 @@ app.post("/upload", function(request, response) {
     
     var file_name = "/" + file.name;
     
-    console.log(file.mv)
     file.mv("./public/snakedata" + file_name, function (err) {
         if(err) {
             console.log(err);
         }
     });
-    console.log("file uploaded")
-      
-      
+    console.log("file " + fileIdx + " uploaded")
+    fileIdx++;
   }
   // give the server a second to write the files
   setTimeout(function(){response.json(images);}, 1000);
