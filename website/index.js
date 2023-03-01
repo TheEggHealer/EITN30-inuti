@@ -17,6 +17,12 @@ app.get('/files', function(req, res) {
   res.send(files);
 });
 
+app.get('/download', function (req, res) {
+  let fileName = req.query['filename'];
+
+  res.download('./public/snakedata/' + fileName, fileName);
+});
+
 var fileIdx = 1;
 app.post("/upload", function(request, response) {
 

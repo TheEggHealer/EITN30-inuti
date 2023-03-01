@@ -18,8 +18,12 @@ let process = window.setInterval(function () {
           for(let i in files) {
             const clone = template.content.cloneNode(true);
             const name = clone.querySelectorAll("p");
-            name[0].innerHTML = files[i]
-    
+            name[0].innerHTML = files[i];
+            
+            clone.querySelectorAll('.file')[0].addEventListener('click', event => {
+              downloadFile(files[i]);
+            });
+
             fileContainer.appendChild(clone);
           }
 
@@ -29,3 +33,23 @@ let process = window.setInterval(function () {
     }
   }
 }, 1000);
+
+function downloadFile(fileName) {
+  console.log(fileName);
+  
+  window.open("/download?filename=" + fileName);
+
+  // let x = new XMLHttpRequest();
+  
+  // x.open('get', '/download', true);
+  // x.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+  // x.send();
+
+  // x.onreadystatechange = function () {
+  //   if(x.readyState == 4) {
+  //     if(x.status == 200) {
+  //       console.log('Downloaded');
+  //     }
+  //   }
+  // }
+}
