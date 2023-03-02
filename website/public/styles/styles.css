@@ -179,11 +179,19 @@ h3 {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   cursor: pointer;
   border: solid 2.5px #45454500;
   border-radius: 5px;
-  padding: 0 10px;
+  
   transition: all 200ms ease;
+}
+
+.file a.file-download {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding-left: 20px;
 }
 
 .file .file-paper {
@@ -191,6 +199,21 @@ h3 {
   min-width: none;
   width: 1.2em;
   margin-right: 20px;
+}
+
+.file .file-close {
+  margin-right: 20px;
+  max-width: none;
+  min-width: none;
+  width: 1.2em;
+}
+.file .file-close g {
+  opacity: 0;
+  fill: #454545;
+  transition: all 200ms ease;
+}
+.file:hover .file-close:hover g {
+  fill: url(#paint0_linear_349_682);
 }
 
 .file .file-paper #arrow {
@@ -205,6 +228,10 @@ h3 {
 
 .file:hover .file-paper #arrow {
   transform: translateY(0%);
+}
+
+.file:hover .file-close g {
+  opacity: 1;
 }
 
 .file .file-paper #pap {

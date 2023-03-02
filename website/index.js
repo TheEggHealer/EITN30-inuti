@@ -23,6 +23,13 @@ app.get('/download', function (req, res) {
   res.download('./public/snakedata/' + fileName, fileName);
 });
 
+app.post("/delete", function (req, res) {
+  let fileName = req.query['filename'];
+
+  var fs = require('fs');
+  fs.unlinkSync('./public/snakedata/' + fileName);
+});
+
 var fileIdx = 1;
 app.post("/upload", function(request, response) {
 

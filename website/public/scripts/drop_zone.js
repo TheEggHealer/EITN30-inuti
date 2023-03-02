@@ -17,10 +17,8 @@ function handleFile(event) {
   let bytes = file[0].size;
   let time = bytes/(1500 * 6.5);
   let interval = (time/100) * 1000;
-  console.log(interval)
   let percent = 0;
   let progress = window.setInterval(function () {
-    console.log(percent)
     if (percent <= 100) {
       document.getElementById('progress-bar').style.width = percent + '%';
     }

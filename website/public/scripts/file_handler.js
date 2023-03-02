@@ -1,6 +1,8 @@
 let current_files = [];
 
-let process = window.setInterval(function () {
+let process = window.setInterval(updateFiles, 1000);
+
+function updateFiles () {
   let x = new XMLHttpRequest();
   x.open('get', '/files', true);
   x.send();
@@ -19,9 +21,25 @@ let process = window.setInterval(function () {
             const clone = template.content.cloneNode(true);
             const name = clone.querySelectorAll("p");
             name[0].innerHTML = files[i];
+
+            const link = clone.querySelectorAll("a");
+            link[0].href = "/download?filename=" + files[i];
+
+
+            //link[1].href = "/delete?filename=" + files[i];
+
+            // const close = clone.querySelectorAll("#file-close-button")
+            // close[0].href = "/dpwdpok"
+  
+
             
-            clone.querySelectorAll('.file')[0].addEventListener('click', event => {
-              downloadFile(files[i]);
+            clone.querySelectorAll('.file-close')[0].addEventListener('click', event => {
+              let closeReq = new XMLHttpRequest();
+              closeReq.onreadystatechange = function () {
+                updateFiles();
+              }
+              closeReq.open('post', '/delete?filename=' + files[i], true);
+              closeReq.send();
             });
 
             fileContainer.appendChild(clone);
@@ -32,7 +50,7 @@ let process = window.setInterval(function () {
       }
     }
   }
-}, 1000);
+}
 
 function downloadFile(fileName) {
   console.log(fileName);
