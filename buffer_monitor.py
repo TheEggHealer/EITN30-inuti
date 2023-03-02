@@ -35,7 +35,7 @@ class BufferMonitor:
   def status(self):
     return self.lock.locked()
 
-  def pop(self, timeout):
+  def pop(self, timeout, queue_type='fifo'):
     self.lock.acquire()
 
     if len(self.packet_buffer) == 0:
@@ -45,13 +45,15 @@ class BufferMonitor:
       self.lock.release()
       return None
 
-    # FIFO
-    packet = self.packet_buffer[0]
-    self.packet_buffer = self.packet_buffer[1:]
+    if queue_type == 'fifo':
+      # FIFO
+      packet = self.packet_buffer[0]
+      self.packet_buffer = self.packet_buffer[1:]
+    else:
+      #LIFO
+      packet = self.packet_buffer[-1]
+      self.packet_buffer = self.packet_buffer[:-1]
 
-    #LIFO
-    # packet = self.packet_buffer[-1]
-    # self.packet_buffer = self.packet_buffer[:-1]
     self.lock.release()
     return packet
 

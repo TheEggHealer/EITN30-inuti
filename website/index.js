@@ -28,9 +28,9 @@ app.post("/delete", function (req, res) {
 
   var fs = require('fs');
   fs.unlinkSync('./public/snakedata/' + fileName);
+  console.log(fileName + ' deleted')
 });
 
-var fileIdx = 1;
 app.post("/upload", function(request, response) {
 
   var images = new Array();
@@ -38,15 +38,14 @@ app.post("/upload", function(request, response) {
     
     var file = request.files['file'];
     
-    var file_name = "/" + file.name;
+    var fileName = file.name;
     
-    file.mv("./public/snakedata" + file_name, function (err) {
+    file.mv("./public/snakedata/" + fileName, function (err) {
         if(err) {
             console.log(err);
         }
     });
-    console.log("file " + fileIdx + " uploaded")
-    fileIdx++;
+    console.log(fileName + ' uploaded')
   }
   // give the server a second to write the files
   setTimeout(function(){response.json(images);}, 1000);
