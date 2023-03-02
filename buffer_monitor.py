@@ -104,4 +104,9 @@ class BufferMonitor:
     self.largest = 0
     self.lock.release()
   
+  def clear_queue(self):
+    self.lock.acquire()
+    self.packet_buffer = []
+    self.lock.release()
+  
   

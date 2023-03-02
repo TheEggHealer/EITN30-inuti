@@ -6,7 +6,7 @@ from tuntap import TunTap
 def tx_thread(tx: RF24, buffer_monitor):
   while True:
     # Wait for packet to send
-    packet = buffer_monitor.pop(1)
+    packet = buffer_monitor.pop(1, queue_type='fifo')
     if packet == None: continue
     
     buffer_monitor.set_sending(True)

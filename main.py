@@ -179,6 +179,8 @@ def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread):
       break
     elif c == 'clear':
       buffer_monitor.clear_stats()
+    elif c == 'clear -b':
+      buffer_monitor.clear_queue()
 
 def setup(device, interface_name='longge'):
   mask = '255.255.255.0'
