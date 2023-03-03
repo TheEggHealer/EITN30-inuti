@@ -68,7 +68,7 @@ def setup_mobile():
     print(e)
     
   try:
-    subprocess.check_call(f'sudo ip route add 192.168.10.163 dev eth0', shell=True)
+    subprocess.check_call(f'sudo ip route add 192.168.10.164 dev eth0', shell=True)
   except Exception as e:
      print(e)
 
@@ -108,7 +108,7 @@ def teardown_mobile(rx, tx):
     print(e)
 
   try:
-    subprocess.check_call(f'sudo ip route del 192.168.10.163 dev eth0', shell=True)
+    subprocess.check_call(f'sudo ip route del 192.168.10.164 dev eth0', shell=True)
   except Exception as e:
      print(e)
 
