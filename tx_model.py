@@ -15,6 +15,7 @@ def tx_thread(tx: RF24, buffer_monitor):
 
       respons = tx.send(segment, ask_no_ack=False, force_retry=1000)
       
+      buffer_monitor.update_bitrate(direction='up', byte_count=len(segment))
       buffer_monitor.update_stats(sent=1, sent_bytes=len(segment), fail=0 if respons else 1)
 
     # Removing one sent package (END OF IP-PACKET)

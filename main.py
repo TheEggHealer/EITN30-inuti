@@ -160,10 +160,11 @@ def print_screen(status):
 def run_program(buffer_monitor, rx_thread, tx_thread, interface_reader_thread): 
   while True:
     show_title()
-    sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails, largest_packet = buffer_monitor.get_stats()
+    sent, received, sent_ip, received_ip, sent_bytes, received_bytes, fails, largest_packet, bitrate_up = buffer_monitor.get_stats()
     print_screen({
       'sent': f'{sent:,} ({sent_ip:,} ip, ' + (f'{sent_bytes:,} B)' if sent_bytes <= 100000 else (f'{int(sent_bytes/1000):,} kB)' if sent_bytes <= 100000000 else f'{int(sent_bytes/1000000):,} MB)')),
       'received': f'{received:,} ({received_ip:,} ip, ' + (f'{received_bytes:,} B)' if received_bytes <= 100000 else (f'{int(received_bytes/1000):,} kB)' if received_bytes <= 100000000 else f'{int(received_bytes/1000000):,} MB)')),
+      'bitrate': f'{bitrate_up:,} b/s',
       'failed': f'{fails:,}',
       'bfr_size': f'{buffer_monitor.size()}',
       'sending': f'{buffer_monitor.get_sending()}',

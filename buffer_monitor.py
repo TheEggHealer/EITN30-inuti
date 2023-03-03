@@ -1,6 +1,7 @@
 import multiprocessing
 from multiprocessing import Lock
 from multiprocessing import Condition
+from datetime import datetime
 
 class BufferMonitor:
 
@@ -16,6 +17,11 @@ class BufferMonitor:
     self.count_fail = 0
     self.sending = False
     self.largest_packet = 0
+
+    self.bitrate_up = 0
+    self.bitrate_down = 0
+    self.bitrate_up_list = []
+    self.bitrate_down_list = []
 
     self.packet_buffer = []
   
@@ -57,6 +63,12 @@ class BufferMonitor:
     self.lock.release()
     return packet
 
+  def update_bitrate(self, direction, byte_count):
+    timestamp = datetime.now()
+    if direction == 'up':
+      self.bitrate_up_list.append((timestamp, byte_count * 8))
+    
+
   def update_stats(self, sent=0, rec=0, sent_ip=0, rec_ip=0, sent_bytes=0, rec_bytes=0, fail=0):
     self.lock.acquire()
     self.count_sent += sent
@@ -81,6 +93,11 @@ class BufferMonitor:
 
   def get_stats(self):
     self.lock.acquire()
+    timestamp = datetime.now()
+    self.bitrate_up_list = [item for item in self.bitrate_up_list if (timestamp - item[0]).seconds <= 10]
+    bitrate_up = sum([item[1] for item in self.bitrate_up_list]) / 10
+
+
     sent = self.count_sent
     rec = self.count_rec
     sent_ip = self.count_sent_ip
@@ -90,7 +107,7 @@ class BufferMonitor:
     fail = self.count_fail
     largest_packet = self.largest_packet
     self.lock.release()
-    return sent, rec, sent_ip, rec_ip, sent_bytes, rec_bytes, fail, largest_packet
+    return sent, rec, sent_ip, rec_ip, sent_bytes, rec_bytes, fail, largest_packet, bitrate_up
   
   def clear_stats(self):
     self.lock.acquire()
@@ -101,7 +118,7 @@ class BufferMonitor:
     self.count_sent_bytes = 0
     self.count_rec_bytes = 0
     self.count_fail = 0
-    self.largest = 0
+    self.largest_packet = 0
     self.lock.release()
   
   def clear_queue(self):
