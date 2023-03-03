@@ -2,9 +2,10 @@ import socket
 import time
 import os
 
-UDP_IP = "127.0.0.1"  # IP address of the server
+UDP_IP = "192.168.69.2"    # IP address of the server
 UDP_PORT = 5005      # Port number to listen on
-MESSAGE_SIZE = 1024  # Size of the message buffer
+MESSAGE_SIZE = 2200  # Size of the message buffer
+INTERVAL = 0.1      # Delay between messages in seconds
 
 # Create a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
